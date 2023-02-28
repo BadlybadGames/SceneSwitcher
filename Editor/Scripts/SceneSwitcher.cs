@@ -55,7 +55,6 @@ namespace BBG.SceneSwitcher.Editor
             }
             
             List<SceneAsset> scenes = new List<SceneAsset>();
-            Debug.Log("Checking favorites");
             foreach (var guid in SceneSwitcherSettings.instance.FavoriteSceneGuids)
             {
                 var assetPath = AssetDatabase.GUIDToAssetPath(guid);
