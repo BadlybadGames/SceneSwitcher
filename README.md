@@ -15,4 +15,6 @@ Add scenes to the "quick jump" list by selecting scene assets and clicking "Favo
 
 ### More info:
 
-This package allows you to quickly swap between "favorite" scenes. Mark scenes from the project folder as favorites by selecting one (or more!) scenes, right clicking and selecting the "Toggle Favorite" option
+This package allows you to quickly swap between "favorite" scenes. Mark scenes from the project folder as favorites by selecting one (or more!) scenes, right clicking and selecting the "Toggle Favorite" option.
+
+Your "favorite" scenes are saved per project and stored between edit sessions.
