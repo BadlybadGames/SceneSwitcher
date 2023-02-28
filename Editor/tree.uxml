@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="project://database/Assets/style.uss?fileID=7433441132597879392&amp;guid=62614ff68cd7df746a18af4157d40b3e&amp;type=3#style" />
+    <uie:Toolbar>
+        <ui:DropdownField label="Scene" index="-1" choices="System.Collections.Generic.List`1[System.String]" style="scale: 1 1; flex-direction: row;" />
+    </uie:Toolbar>
+</ui:UXML>
