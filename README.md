@@ -1,7 +1,7 @@
 ### Installing
 PackageManager -> "+" -> "Add package from git URL" -> "https://github.com/BadlybadGames/SceneSwitcher.git"
 
-[install](/install.webm)
+[install](/install.mp4)
 
 ### What?
 Quickly switch scenes from right next to the play/pause buttons
