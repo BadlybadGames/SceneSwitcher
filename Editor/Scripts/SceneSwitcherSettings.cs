@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Plastic.Newtonsoft.Json.Serialization;
 using UnityEditor;
 
 namespace BBG.SceneSwitcher.Editor

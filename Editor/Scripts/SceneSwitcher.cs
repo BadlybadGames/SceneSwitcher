@@ -70,7 +70,7 @@ namespace BBG.SceneSwitcher.Editor
 
         private static void AddVisualTreeElement()
         {
-            VisualTreeAsset asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/tree.uxml");
+            VisualTreeAsset asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/com.badlybadgames.sceneswitcher/Editor/tree.uxml");
             var ui = asset.Instantiate();
 
             var root = _toolbar.GetType().GetField("m_Root", BindingFlags.NonPublic | BindingFlags.Instance);
