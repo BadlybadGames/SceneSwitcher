@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -44,6 +45,7 @@ namespace BBG.SceneSwitcher.Editor
         }
 
         private static DropdownField _dropdown;
+        private static Dictionary<string, string> _choiceMap = new Dictionary<string, string>();
 
         private static void UpdateDropdownChoices()
         {
@@ -53,15 +55,14 @@ namespace BBG.SceneSwitcher.Editor
             }
             
             List<SceneAsset> scenes = new List<SceneAsset>();
-            foreach (string s in SceneSwitcherSettings.instance.FavoriteSceneGuids)
+            Debug.Log("Checking favorites");
+            foreach (var guid in SceneSwitcherSettings.instance.FavoriteSceneGuids)
             {
-                Debug.Log("Checking favorites");
-                foreach (var guid in SceneSwitcherSettings.instance.FavoriteSceneGuids)
-                {
-                    var assetPath = AssetDatabase.GUIDToAssetPath(guid);
-                    SceneAsset scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(assetPath);
-                    scenes.Add(scene);
-                }
+                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                SceneAsset scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(assetPath);
+                scenes.Add(scene);
+
+                _choiceMap[scene.name] = guid;
             }
 
         
@@ -98,11 +99,12 @@ namespace BBG.SceneSwitcher.Editor
                 return;
             }
 
+            var guid = _choiceMap[evt.newValue];
+
             if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {
-                var path = $"Assets/{evt.newValue}.unity";
-                Debug.Log("Scene test: " + SceneManager.GetSceneByName(evt.newValue).buildIndex);
-                EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
+                var sceneAssetPath = AssetDatabase.GUIDToAssetPath(guid);
+                EditorSceneManager.OpenScene(sceneAssetPath, OpenSceneMode.Single);
             }
         }
 
