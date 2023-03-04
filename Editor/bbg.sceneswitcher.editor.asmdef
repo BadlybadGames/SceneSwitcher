@@ -2,7 +2,9 @@
     "name": "bbg.sceneswitcher.editor",
     "rootNamespace": "BBG.SceneSwitcher.Editor",
     "references": [],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
