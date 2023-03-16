@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEngine;
 
 namespace BBG.SceneSwitcher.Editor
 {
     [FilePath("BBG/SceneSwitcher/SceneSwitcherSettings.ini", FilePathAttribute.Location.ProjectFolder)]
     public class SceneSwitcherSettings : ScriptableSingleton<SceneSwitcherSettings>
     {
+        [SerializeField]
         private List<string> favoriteSceneGUIDS = new List<string>();
 
         public static event Action changed;
