@@ -21,8 +21,17 @@ namespace BBG.SceneSwitcher.Editor
             {
                 EditorApplication.update -= Update;
                 EditorApplication.update += Update;
-            
+
+                EditorSceneManager.activeSceneChangedInEditMode -= ActiveSceneChanged;
+                EditorSceneManager.activeSceneChangedInEditMode += ActiveSceneChanged;
+
             };
+        }
+
+        private static void ActiveSceneChanged(Scene oldScene, Scene newScene)
+        {
+            Debug.Log($"Old scene: {oldScene}");
+            Debug.Log($"New scene: {newScene}");
         }
 
         private static void Update()
@@ -45,7 +54,7 @@ namespace BBG.SceneSwitcher.Editor
         }
 
         private static DropdownField _dropdown;
-        private static Dictionary<string, string> _choiceMap = new Dictionary<string, string>();
+        private static Dictionary<string, SceneSwitcherSettings.Entry> _choiceMap = new Dictionary<string, SceneSwitcherSettings.Entry>();
 
         private static void UpdateDropdownChoices()
         {
@@ -55,17 +64,26 @@ namespace BBG.SceneSwitcher.Editor
             }
             
             List<SceneAsset> scenes = new List<SceneAsset>();
-            foreach (var guid in SceneSwitcherSettings.instance.FavoriteSceneGuids)
+            var props = new List<string>();
+            foreach (var entry in SceneSwitcherSettings.instance.Entries)
             {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
-                SceneAsset scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(assetPath);
-                scenes.Add(scene);
+                var sceneNames = entry.SceneNames();
 
-                _choiceMap[scene.name] = guid;
+                string prop;
+                if (sceneNames.Length == 1)
+                {
+                    prop = sceneNames[0];
+                }
+                else
+                {
+                    prop = string.Join(", ", sceneNames);
+                }
+
+                _choiceMap[prop] = entry;
             }
 
-        
-            _dropdown.choices = scenes.Select(s => s.name).ToList();
+
+            _dropdown.choices = props;
         }
 
         private static void AddVisualTreeElement()
@@ -98,35 +116,54 @@ namespace BBG.SceneSwitcher.Editor
                 return;
             }
 
-            var guid = _choiceMap[evt.newValue];
+            var entry = _choiceMap[evt.newValue];
 
             if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {
-                var sceneAssetPath = AssetDatabase.GUIDToAssetPath(guid);
-                EditorSceneManager.OpenScene(sceneAssetPath, OpenSceneMode.Single);
+                var guids = entry.ScenesGUIDS();
+                var firstScene = GetScenePathFromGUID(guids[0]);
+                EditorSceneManager.OpenScene(firstScene, OpenSceneMode.Single);
+                if (guids.Length > 1)
+                {
+                    foreach (var guid in guids[1..])
+                    {
+                        var scenePath = GetScenePathFromGUID(guid);
+                        EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
+                    }
+                }
             }
+        }
+
+        private static string GetScenePathFromGUID(string sceneGUID)
+        {
+            var assetPath = AssetDatabase.GUIDToAssetPath(sceneGUID);
+            
+            return assetPath;
         }
 
         private static void ToggleFavoriteSceneStatus(SceneAsset asset)
         {
             bool success =
-                AssetDatabase.TryGetGUIDAndLocalFileIdentifier(Selection.activeObject, out string guid, out long localId);
+                AssetDatabase.TryGetGUIDAndLocalFileIdentifier(asset, out string guid, out long localId);
 
             if (!success)
             {
                 Debug.LogError("Failed to get guid for object: " + asset, asset);
             }
-        
-            var saved = SceneSwitcherSettings.instance.FavoriteSceneGuids;
-
-            if (saved.Contains(guid))
-            {
-                SceneSwitcherSettings.instance.RemoveEntry(guid);
             
+            Debug.Log($"Guid for {asset.name} is: {guid}");
+        
+            var saved = SceneSwitcherSettings.IsFavorited(asset.name);
+
+            if (saved)
+            {
+                SceneSwitcherSettings.instance.AddFavoriteScenes(asset.name);
             }
             else
             {
-                SceneSwitcherSettings.instance.AddEntry(guid);
+                throw new NotImplementedException();
+                Debug.Log("Remove guid: " + guid);
+                SceneSwitcherSettings.instance.R(guid);
             }
         }
 
@@ -135,6 +172,7 @@ namespace BBG.SceneSwitcher.Editor
         {
             foreach (var obj in Selection.objects)
             {
+                Debug.Log("toggle for: "  +(obj as SceneAsset).name);
                 ToggleFavoriteSceneStatus(obj as SceneAsset);
             }
             SceneSwitcherSettings.Save();
